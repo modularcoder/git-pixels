@@ -24,7 +24,10 @@
             class="pixel"
             :key="n"
             :style="pixelSizeStyle"
-            :class="`-color-${n - 1}`"
+            :class="[
+              { '-selected': n - 1 == selectedColor },
+              `-color-${n - 1}`
+            ]"
             @click="selectColor(n - 1)"
           ></div>
         </div>
@@ -62,7 +65,8 @@ export default {
       selectedColor: 2,
       isDrawing: false,
       days: [],
-      pixels: []
+      pixels: [],
+      amplification: 1
     };
   },
   computed: {
@@ -97,11 +101,16 @@ export default {
       this.days = daysOfYear;
     },
     setPixels() {
-      this.pixels = this.days.map((date, index) => ({
-        date,
-        index,
-        value: 0
-      }));
+      this.pixels = this.days.map((date, index) => {
+        const isLast = index === this.days.length - 1;
+
+        return {
+          date,
+          index,
+          value: isLast ? 4 : 0,
+          isEditable: !isLast
+        };
+      });
     },
     selectColor(value) {
       this.selectedColor = value;
@@ -113,6 +122,10 @@ export default {
       this.isDrawing = false;
     },
     fill(pixel) {
+      if (!pixel.isEditable) {
+        return false;
+      }
+
       pixel.value = this.selectedColor;
       this.pixels = [...this.pixels];
 
@@ -175,7 +188,7 @@ export default {
   position: relative;
 
   &.-selected {
-    border-color: red;
+    border-color: #000;
   }
 
   &.-color-0 {
