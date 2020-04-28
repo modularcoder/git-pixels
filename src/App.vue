@@ -114,7 +114,7 @@ export default {
       days: [],
       pixels: [],
       pixelsHistory: [],
-      amplification: 1
+      amplification: 80
     };
   },
   computed: {
@@ -216,6 +216,7 @@ export default {
       });
     },
     reset() {
+      this.pixelsHistory = [];
       this.setPixels();
     }
   }
