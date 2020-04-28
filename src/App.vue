@@ -6,7 +6,17 @@
       <div class="control-container">
         <div class="level">
           <div class="level-left">
-            Pick the Year
+            <b-field
+              label="Pick the Year"
+              horizontal
+              custom-class="control-label"
+            >
+              <b-select placeholder="Select the year" v-model="year">
+                <option v-for="value in years" :value="value" :key="value">
+                  {{ value }}
+                </option>
+              </b-select>
+            </b-field>
           </div>
         </div>
       </div>
@@ -14,28 +24,36 @@
       <div class="control-container">
         <div class="level">
           <div class="level-left">
-            Pick the Color
-            <div class="colors-container">
-              <div
-                v-for="n in 5"
-                class="pixel"
-                :key="n"
-                :style="pixelSizeStyle"
-                :class="[
-                  { '-selected': n - 1 == selectedColor },
-                  `-color-${n - 1}`
-                ]"
-                @click="selectColor(n - 1)"
-              ></div>
-            </div>
+            <b-field
+              label="Pick the Color"
+              horizontal
+              custom-class="control-label"
+            >
+              <div class="colors-container">
+                <div
+                  v-for="n in 5"
+                  class="pixel"
+                  :key="n"
+                  :style="pixelSizeStyle"
+                  :class="[
+                    { '-selected': n - 1 == selectedColor },
+                    `-color-${n - 1}`
+                  ]"
+                  @click="selectColor(n - 1)"
+                ></div>
+              </div>
+            </b-field>
           </div>
-          <div class="lefel-right">
+          <div class="level-right">
             <b-button
               size="is-small"
               @click="undo"
               :disabled="!pixelsHistory.length"
-              >Undo</b-button
+              v-shortkey.push="{ undo: ['ctrl', 'z'], undoMac: ['meta', 'z'] }"
+              @shortkey="undo"
             >
+              Undo
+            </b-button>
             <b-button size="is-small" @click="share">Share</b-button>
             <b-button size="is-small" @click="confirmReset()">Reset</b-button>
           </div>
@@ -48,8 +66,6 @@
           height: containerHeight + 'px',
           width: containerWidth + 'px'
         }"
-        v-on:mousedown="startDrowing"
-        v-on:mouseup="stopDrowing"
       >
         <b-tooltip
           label="Tooltip top"
@@ -62,7 +78,8 @@
             class="pixel"
             :style="pixelSizeStyle"
             :class="`-color-${pixel.value}`"
-            @mousedown="captureState() || fill(pixel)"
+            @mousedown="startDrawing() || fill(pixel)"
+            @mouseup="stopDrowing()"
             @mouseover="isDrawing && fill(pixel)"
           ></div>
         </b-tooltip>
@@ -83,7 +100,7 @@ export default {
   },
   data() {
     return {
-      year: 2012,
+      year: moment().year(),
       pixelSize: 18,
       selectedColor: 2,
       isDrawing: false,
@@ -95,7 +112,7 @@ export default {
   },
   computed: {
     years() {
-      return [...Array(6)].map((x, index) =>
+      return [...Array(15)].map((x, index) =>
         moment()
           .subtract(index, "years")
           .year()
@@ -146,7 +163,7 @@ export default {
     selectColor(value) {
       this.selectedColor = value;
     },
-    startDrowing() {
+    startDrawing() {
       this.captureState();
       this.isDrawing = true;
     },
@@ -164,9 +181,18 @@ export default {
       console.log("pixel", pixel);
     },
     captureState() {
+      if (this.isDrawing) {
+        return false;
+      }
+
       const pixelsState = this.pixels.map(pixel => ({ ...pixel }));
 
       this.pixelsHistory.push(pixelsState);
+
+      // Store max 50 snapshots
+      if (this.pixelsHistory.length > 50) {
+        this.pixelsHistory.unshift();
+      }
     },
     undo() {
       if (!this.pixelsHistory) {
@@ -209,11 +235,16 @@ export default {
   margin-bottom: 1em;
 }
 
+.control-label {
+  white-space: nowrap;
+  width: 100px;
+  text-align: left;
+}
+
 .colors-container {
   display: inline-flex;
   flex-direction: row;
   vertical-align: bottom;
-  margin-left: 1em;
 
   .pixel {
     cursor: pointer;
