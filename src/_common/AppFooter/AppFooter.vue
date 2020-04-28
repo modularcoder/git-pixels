@@ -68,5 +68,14 @@ export default {};
 
 .badge-link {
   margin-right: 0.7rem;
+  opacity: 0.7;
+  transition: all 0.25s ease;
+  position: relative;
+  top: 0;
+
+  &:hover {
+    opacity: 1;
+    top: -1.5px;
+  }
 }
 </style>
