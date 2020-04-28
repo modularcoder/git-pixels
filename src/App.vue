@@ -30,17 +30,22 @@
               custom-class="control-label"
             >
               <div class="colors-container">
-                <div
+                <b-tooltip
                   v-for="n in 5"
-                  class="pixel"
                   :key="n"
-                  :style="pixelSizeStyle"
-                  :class="[
-                    { '-selected': n - 1 == selectedColor },
-                    `-color-${n - 1}`
-                  ]"
-                  @click="selectColor(n - 1)"
-                ></div>
+                  :label="`${(n - 1) * amplification} contributions`"
+                  type="is-black"
+                >
+                  <div
+                    class="pixel"
+                    :style="pixelSizeStyle"
+                    :class="[
+                      { '-selected': n - 1 == selectedColor },
+                      `-color-${n - 1}`
+                    ]"
+                    @click="selectColor(n - 1)"
+                  ></div>
+                </b-tooltip>
               </div>
             </b-field>
           </div>
