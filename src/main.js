@@ -1,4 +1,4 @@
-import "buefy/dist/buefy.css";
+import "./_theme/theme.scss";
 
 import Vue from "vue";
 import Buefy from "buefy";

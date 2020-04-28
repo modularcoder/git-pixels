@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
+  <div id="app" @mouseup="stopDrowing()">
     <app-intro />
 
-    <div class="controls-container">
+    <div class="page-container">
       <div class="control-container">
         <div class="level">
           <div class="level-left">
@@ -54,7 +54,6 @@
             >
               Undo
             </b-button>
-            <b-button size="is-small" @click="share">Share</b-button>
             <b-button size="is-small" @click="confirmReset()">Reset</b-button>
           </div>
         </div>
@@ -79,10 +78,18 @@
             :style="pixelSizeStyle"
             :class="`-color-${pixel.value}`"
             @mousedown="startDrawing() || fill(pixel)"
-            @mouseup="stopDrowing()"
             @mouseover="isDrawing && fill(pixel)"
           ></div>
         </b-tooltip>
+      </div>
+
+      <div class="actions level">
+        <div class="level-left">
+          <b-button type="is-primary">Generage my git-pixels!</b-button>
+        </div>
+        <div class="level-right">
+          <b-button type="is-info">Share</b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -202,8 +209,15 @@ export default {
       this.pixels = this.pixelsHistory.pop();
     },
     share() {},
-    confirmReset() {},
-    reset() {}
+    confirmReset() {
+      this.$buefy.dialog.confirm({
+        message: "Reset the pixels?",
+        onConfirm: () => this.reset()
+      });
+    },
+    reset() {
+      this.setPixels();
+    }
   }
 };
 </script>
@@ -221,7 +235,7 @@ export default {
   color: #2c3e50;
 }
 
-.controls-container {
+.page-container {
   margin: 0 auto;
   text-align: left;
   display: inline-flex;
@@ -257,6 +271,7 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   display: flex;
+  margin-bottom: 2rem;
 }
 
 .pixel {
