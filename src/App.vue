@@ -85,10 +85,10 @@
 
       <div class="actions level">
         <div class="level-left">
-          <b-button type="is-primary">Generage my git-pixels!</b-button>
+          <b-button type="is-dark">Create my git-pixels!</b-button>
         </div>
         <div class="level-right">
-          <b-button type="is-info">Share</b-button>
+          <b-button type="is-primary">Share</b-button>
         </div>
       </div>
     </div>
