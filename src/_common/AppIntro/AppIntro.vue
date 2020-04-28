@@ -6,7 +6,7 @@
           Git-Pixels by @modularcoder
         </h1>
         <h2 class="subtitle">
-          A simple tool for creating GitHub contributions chart
+          A simple tool for creating GitHub contributions charts
         </h2>
       </div>
     </div>
