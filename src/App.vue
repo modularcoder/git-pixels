@@ -2,7 +2,7 @@
   <div id="app" @mouseup="stopDrowing()">
     <app-intro />
 
-    <div class="page-container">
+    <div class="container app-container form-container">
       <div class="control-container">
         <div class="level">
           <div class="level-left">
@@ -76,8 +76,8 @@
         <b-tooltip
           :label="
             `
-            ${pixel.value ? pixel.value * amplification : 'No'} 
-            contributions 
+            ${pixel.value ? pixel.value * amplification : 'No'}
+            contributions
             ${!pixel.isEditable ? '(not editable)' : ''}
           `
           "
@@ -105,6 +105,8 @@
         </div>
       </div>
     </div>
+
+    <app-footer />
   </div>
 </template>
 
@@ -112,11 +114,13 @@
 import moment from "moment";
 
 import AppIntro from "./_common/AppIntro/AppIntro";
+import AppFooter from "./_common/AppFooter/AppFooter";
 
 export default {
   name: "App",
   components: {
-    AppIntro
+    AppIntro,
+    AppFooter
   },
   data() {
     return {
@@ -245,15 +249,17 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
+  min-height: 100vh;
+  padding-bottom: 200px;
+  position: relative;
 }
 
-.page-container {
-  margin: 0 auto;
-  text-align: left;
-  display: inline-flex;
-  flex-direction: column;
+.app-container {
+  max-width: 1050px;
+}
+
+.form-container {
   user-select: none;
   padding: 3rem;
   border: 2px dashed rgb(230, 230, 230);
