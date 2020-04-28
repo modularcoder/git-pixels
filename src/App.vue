@@ -78,7 +78,7 @@
             `
             ${pixel.value ? pixel.value * amplification : 'No'} 
             contributions 
-            ${!isEditable && '(not editable)'}
+            ${!pixel.isEditable ? '(not editable)' : ''}
           `
           "
           v-for="pixel in pixels"
@@ -294,7 +294,7 @@ export default {
   position: relative;
 
   &.-selected {
-    border-color: #000;
+    border-color: rgba(0, 0, 0, 0.5);
   }
 
   &.-color-0 {
