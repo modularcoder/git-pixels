@@ -6,7 +6,7 @@
           <div class="level-left author">
             <div class="author-description">
               Created by by
-              <a href="https://twitter.com/modularcoder">
+              <a href="https://github.com/modularcoder">
                 <strong>Gev Harutyunyan</strong>
               </a>
             </div>
