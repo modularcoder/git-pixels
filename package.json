@@ -9,7 +9,9 @@
     "deploy": "cross-env NODE_ENV=development TARGET=github npm run build && gh-pages -d dist --repo git@github.com:modularcoder/git-pixels.git --branch gh-pages"
   },
   "dependencies": {
+    "buefy": "^0.8.17",
     "core-js": "^3.6.4",
+    "moment": "^2.24.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {

@@ -1,35 +1,44 @@
 <template>
   <div id="app">
-    <h1>
-      Git-Pixels by @modularcoder
-    </h1>
-    <p>
-      A simple tool for creating GitHub contributions chart
-    </p>
+    <app-intro />
 
-    <div
-      class="controls-container"
-      v-on:mousedown="startDrowing"
-      v-on:mouseup="stopDrowing"
-    >
+    <div class="controls-container">
       <div class="control-container">
-        Pick the Year
+        <div class="level">
+          <div class="level-left">
+            Pick the Year
+          </div>
+        </div>
       </div>
 
       <div class="control-container">
-        Pick the Color
-        <div class="colors-container">
-          <div
-            v-for="n in 5"
-            class="pixel"
-            :key="n"
-            :style="pixelSizeStyle"
-            :class="[
-              { '-selected': n - 1 == selectedColor },
-              `-color-${n - 1}`
-            ]"
-            @click="selectColor(n - 1)"
-          ></div>
+        <div class="level">
+          <div class="level-left">
+            Pick the Color
+            <div class="colors-container">
+              <div
+                v-for="n in 5"
+                class="pixel"
+                :key="n"
+                :style="pixelSizeStyle"
+                :class="[
+                  { '-selected': n - 1 == selectedColor },
+                  `-color-${n - 1}`
+                ]"
+                @click="selectColor(n - 1)"
+              ></div>
+            </div>
+          </div>
+          <div class="lefel-right">
+            <b-button
+              size="is-small"
+              @click="undo"
+              :disabled="!pixelsHistory.length"
+              >Undo</b-button
+            >
+            <b-button size="is-small" @click="share">Share</b-button>
+            <b-button size="is-small" @click="confirmReset()">Reset</b-button>
+          </div>
         </div>
       </div>
 
@@ -39,25 +48,39 @@
           height: containerHeight + 'px',
           width: containerWidth + 'px'
         }"
+        v-on:mousedown="startDrowing"
+        v-on:mouseup="stopDrowing"
       >
-        <div
+        <b-tooltip
+          label="Tooltip top"
           v-for="pixel in pixels"
-          class="pixel"
           :key="pixel.index"
-          :style="pixelSizeStyle"
-          :class="`-color-${pixel.value}`"
-          @mousedown="fill(pixel)"
-          @mouseover="isDrawing && fill(pixel)"
-        ></div>
+          :active="!isDrawing"
+          type="is-black"
+        >
+          <div
+            class="pixel"
+            :style="pixelSizeStyle"
+            :class="`-color-${pixel.value}`"
+            @mousedown="captureState() || fill(pixel)"
+            @mouseover="isDrawing && fill(pixel)"
+          ></div>
+        </b-tooltip>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import moment from "moment";
+
+import AppIntro from "./_common/AppIntro/AppIntro";
+
 export default {
   name: "App",
-  components: {},
+  components: {
+    AppIntro
+  },
   data() {
     return {
       year: 2012,
@@ -66,10 +89,18 @@ export default {
       isDrawing: false,
       days: [],
       pixels: [],
+      pixelsHistory: [],
       amplification: 1
     };
   },
   computed: {
+    years() {
+      return [...Array(6)].map((x, index) =>
+        moment()
+          .subtract(index, "years")
+          .year()
+      );
+    },
     containerHeight() {
       return this.pixelSize * 7;
     },
@@ -116,6 +147,7 @@ export default {
       this.selectedColor = value;
     },
     startDrowing() {
+      this.captureState();
       this.isDrawing = true;
     },
     stopDrowing() {
@@ -130,7 +162,22 @@ export default {
       this.pixels = [...this.pixels];
 
       console.log("pixel", pixel);
-    }
+    },
+    captureState() {
+      const pixelsState = this.pixels.map(pixel => ({ ...pixel }));
+
+      this.pixelsHistory.push(pixelsState);
+    },
+    undo() {
+      if (!this.pixelsHistory) {
+        return false;
+      }
+
+      this.pixels = this.pixelsHistory.pop();
+    },
+    share() {},
+    confirmReset() {},
+    reset() {}
   }
 };
 </script>
@@ -146,7 +193,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 .controls-container {
