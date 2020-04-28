@@ -289,7 +289,7 @@ export default {
 }
 
 .pixel {
-  border: 2px solid #fff;
+  border: 1.5px solid #fff;
   background: rgb(235, 237, 240);
   position: relative;
 
