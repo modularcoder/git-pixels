@@ -6,20 +6,19 @@
           <div class="level-left">
             <p>
               <strong>git-pixels</strong> by
-              <a href="https://twitter.com/modularcoder">@modularcoder</a>
-              <br />
+              <a href="https://twitter.com/modularcoder"
+                ><strong>@modularcoder</strong></a
+              >
             </p>
           </div>
           <div class="level-right">
-            <iframe
-              class="github-button"
-              src="https://ghbtns.com/github-btn.html?user=modularcoder&repo=git-pixels&type=star&count=true&size=large"
-              frameborder="0"
-              scrolling="0"
-              width="170"
-              height="30"
-              title="Watch twbs/bootstrap on GitHub"
-            ></iframe>
+            <b-button
+              type="is-text"
+              outlined
+              tag="a"
+              href="https://github.com/modularcoder/git-pixels"
+              >View on GitHub</b-button
+            >
           </div>
         </div>
       </div>
@@ -37,6 +36,7 @@ export default {};
   bottom: 0;
   left: 0;
   width: 100%;
+  padding: 3rem 1.5rem 3rem;
 }
 
 .github-button {
