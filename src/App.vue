@@ -33,7 +33,9 @@
                 <b-tooltip
                   v-for="n in 5"
                   :key="n"
-                  :label="`${(n - 1) * amplification} contributions`"
+                  :label="
+                    `${n - 1 ? (n - 1) * amplification : 'No'} contributions`
+                  "
                   type="is-black"
                 >
                   <div
@@ -72,7 +74,13 @@
         }"
       >
         <b-tooltip
-          label="Tooltip top"
+          :label="
+            `
+            ${pixel.value ? pixel.value * amplification : 'No'} 
+            contributions 
+            ${!isEditable && '(not editable)'}
+          `
+          "
           v-for="pixel in pixels"
           :key="pixel.index"
           :active="!isDrawing"
