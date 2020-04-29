@@ -107,7 +107,7 @@ function getContributions(argv) {
   const yearNow = moment().year()
 
   const dateTo =
-    this.year === yearNow
+    year === yearNow
       ? moment()
       : moment()
           .set('year', year)
