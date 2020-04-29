@@ -1,11 +1,15 @@
 {
   "name": "git-pixels",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "create": "node bin/create.js",
     "deploy": "cross-env NODE_ENV=development TARGET=github npm run build && echo git-pixels.gh.am > ./dist/CNAME && gh-pages -d dist --repo git@github.com:modularcoder/git-pixels.git --branch gh-pages"
+  },
+  "bin": {
+    "create": "bin/create.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
