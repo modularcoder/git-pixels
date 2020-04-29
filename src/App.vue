@@ -132,29 +132,38 @@
           <div class="notification">
             <div class="content">
               <h3>
-                Step 1 - run this command in your terminal
+                Step 1 - create an empty repo in your GitHub account, and paste
+                the URL here
+              </h3>
+
+              <b-field>
+                <b-input
+                  placeholder="e.g. git@github.com:modularcoder/my-pixels.git"
+                  v-model="repoUrl"
+                ></b-input>
+              </b-field>
+
+              <h3>
+                Step 2 - run this command in your terminal
               </h3>
 
               <pre class="code-output">{{ code }}</pre>
 
               <h3>
-                Step 2 - create an empty repo in your GitHub account
+                Step 3 - wait until your contributions appear :)
               </h3>
 
-              <h3>
-                Step 3 - push the generated repository to your GitHub
-              </h3>
-
-              <pre>
-  cd git-pixels
-  git remote add origin
-  git@github.com:{GITHUB_USERNAME}/{GITHUB_REPO_NAME}.git
-  git push -u origin master</pre
-              >
-
-              <h3>
-                Step 4 - your contributions should appear in 2 days
-              </h3>
+              <p>
+                According GitHub
+                <a
+                  href="https://help.github.com/en/github/setting-up-and-managing-your-github-profile/why-are-my-contributions-not-showing-up-on-my-profile"
+                  >Contributions FAQ</a
+                >
+                it might take a up to 24 hours for the contributions to show
+                up.<br /><br />
+                Go to
+                <a :href="githubUrl">{{ githubUrl }}</a>
+              </p>
             </div>
           </div>
         </div>
@@ -192,6 +201,7 @@ export default {
       pixelsHistory: [],
       amplification: 25,
       isOutputOpen: false,
+      repoUrl: '',
       code: '',
     }
   },
@@ -211,6 +221,35 @@ export default {
     },
     pixelSizeStyle() {
       return { width: this.pixelSize + 'px', height: this.pixelSize + 'px' }
+    },
+    repoParts() {
+      // git@github.com:modularcoder/pixels-vue.git
+      if (this.repoUrl.indexOf('git@') > -1) {
+        return this.repoUrl.replace('git@github.com:', '').split('/')
+      }
+      // https://github.com/modularcoder/pixels-vue.git
+      else if (this.repoUrl.indexOf('https') > -1) {
+        return this.repoUrl.replace('https://github.com/', '').split('/')
+      }
+
+      return []
+    },
+    repoUsername() {
+      if (this.repoParts.length > 1) {
+        return this.repoParts[0]
+      }
+
+      return ''
+    },
+    repoName() {
+      if (this.repoParts.length > 1) {
+        return this.repoParts[1].replace('.git', '')
+      }
+
+      return ''
+    },
+    githubUrl() {
+      return `https://github.com/${this.repoUsername}`
     },
   },
   created() {
@@ -377,9 +416,15 @@ export default {
       this.isOutputOpen = !this.isOutputOpen
     },
     generate() {
-      this.code = `npx git-pixels create --name=git-pixels --year=${
-        this.year
-      } --pixels=${this.pixels.map(pixel => pixel.value).join('')}`
+      const nameStr = this.repoName ? `--name=${this.repoName}` : ''
+      const pushStr =
+        this.repoName && this.repoUrl
+          ? `&& cd ${this.repoName} && git remote add origin ${this.repoUrl} && git push -u origin master`
+          : ''
+
+      this.code = `npx git-pixels create ${nameStr} \
+--year=${this.year} \
+--pixels=${this.pixels.map(pixel => pixel.value).join('')} ${pushStr}`
     },
   },
 }
