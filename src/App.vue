@@ -156,7 +156,7 @@ export default {
       days: [],
       pixels: [],
       pixelsHistory: [],
-      amplification: 80,
+      amplification: 25,
     }
   },
   computed: {

@@ -102,7 +102,7 @@ async function create(argv) {
 }
 
 function getContributions(argv) {
-  const { year, pixels, amplify = 20 } = argv
+  const { year, pixels, amplify = 25 } = argv
 
   const yearNow = moment().year()
 
