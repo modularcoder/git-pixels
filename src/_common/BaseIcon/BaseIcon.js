@@ -8,6 +8,7 @@ import {
   faShareAlt,
   faShareAltSquare,
   faDownload,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons'
 
 const iconsSolid = [
@@ -18,6 +19,7 @@ const iconsSolid = [
   faShareAltSquare,
   faShareAlt,
   faDownload,
+  faCog,
 ]
 
 const iconsRegular = []

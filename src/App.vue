@@ -107,9 +107,16 @@
 
       <div class="actions level">
         <div class="level-left">
-          <b-button type="is-dark" icon-left="download">
-            Create my git-pixels!
-          </b-button>
+          <div class="field has-addons">
+            <p class="control">
+              <b-button type="is-primary">
+                Create my git-pixels!
+              </b-button>
+            </p>
+            <p class="control">
+              <b-button type="is-primary" icon-right="cog" />
+            </p>
+          </div>
         </div>
         <div class="level-right">
           <b-button type="is-primary" icon-left="share-square">

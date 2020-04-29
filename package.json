@@ -5,7 +5,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "cross-env NODE_ENV=development TARGET=github npm run build && gh-pages -d dist --repo git@github.com:modularcoder/git-pixels.git --branch gh-pages"
+    "deploy": "cross-env NODE_ENV=development TARGET=github npm run build && echo git-pixels.gh.am > ./dist/CNAME && gh-pages -d dist --repo git@github.com:modularcoder/git-pixels.git --branch gh-pages"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
