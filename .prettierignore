@@ -1,0 +1,5 @@
+dist/*
+dist/**/*
+sf-widget.js
+@/../../widgets/dist/sf-widget.js
+../widgets/dist/sf-widget.js

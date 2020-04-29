@@ -1,15 +1,22 @@
-import "./_theme/theme.scss";
+import './_theme/theme.scss'
 
-import Vue from "vue";
-import Buefy from "buefy";
-import ShortKey from "vue-shortkey";
+import Vue from 'vue'
+import Buefy from 'buefy'
+import ShortKey from 'vue-shortkey'
 
-import App from "./App.vue";
+import BaseIcon from './_common/BaseIcon'
 
-Vue.config.productionTip = false;
+import App from './App.vue'
 
-Vue.use(Buefy);
-Vue.use(ShortKey);
+Vue.component('base-icon', BaseIcon)
+
+Vue.use(Buefy, {
+  defaultIconComponent: 'base-icon',
+  defaultIconPack: 'fas',
+})
+Vue.use(ShortKey)
+
+Vue.config.productionTip = false
 new Vue({
-  render: h => h(App)
-}).$mount("#app");
+  render: h => h(App),
+}).$mount('#app')

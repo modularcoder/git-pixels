@@ -11,11 +11,20 @@
               horizontal
               custom-class="control-label"
             >
-              <b-select placeholder="Select the year" v-model="year">
-                <option v-for="value in years" :value="value" :key="value">
+              <b-dropdown aria-role="list">
+                <BButton slot="trigger" slot-scope="{ active }">
+                  <span>{{ year }}</span>
+                  <b-icon :icon="active ? 'angle-up' : 'angle-down'"></b-icon>
+                </BButton>
+
+                <b-dropdown-item
+                  v-for="value in years"
+                  :key="value"
+                  @click="confirmSetYear(value)"
+                >
                   {{ value }}
-                </option>
-              </b-select>
+                </b-dropdown-item>
+              </b-dropdown>
             </b-field>
           </div>
         </div>
@@ -43,7 +52,7 @@
                     :style="pixelSizeStyle"
                     :class="[
                       { '-selected': n - 1 == selectedColor },
-                      `-color-${n - 1}`
+                      `-color-${n - 1}`,
                     ]"
                     @click="selectColor(n - 1)"
                   ></div>
@@ -70,7 +79,7 @@
         class="pixels-container"
         :style="{
           height: containerHeight + 'px',
-          width: containerWidth + 'px'
+          width: containerWidth + 'px',
         }"
       >
         <b-tooltip
@@ -111,133 +120,155 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
-import AppIntro from "./_common/AppIntro/AppIntro";
-import AppFooter from "./_common/AppFooter/AppFooter";
+import AppIntro from './_common/AppIntro/AppIntro'
+import AppFooter from './_common/AppFooter/AppFooter'
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     AppIntro,
-    AppFooter
+    AppFooter,
   },
   data() {
     return {
       year: moment().year(),
+      numWeeks: 53,
       pixelSize: 18,
       selectedColor: 2,
       isDrawing: false,
       days: [],
       pixels: [],
       pixelsHistory: [],
-      amplification: 80
-    };
+      amplification: 80,
+    }
   },
   computed: {
     years() {
       return [...Array(15)].map((x, index) =>
         moment()
-          .subtract(index, "years")
-          .year()
-      );
+          .subtract(index, 'years')
+          .year(),
+      )
     },
     containerHeight() {
-      return this.pixelSize * 7;
+      return this.pixelSize * 7
     },
     containerWidth() {
-      return this.pixelSize * Math.ceil(this.days.length / 7);
+      return this.pixelSize * Math.ceil(this.days.length / 7)
     },
     pixelSizeStyle() {
-      return { width: this.pixelSize + "px", height: this.pixelSize + "px" };
-    }
+      return { width: this.pixelSize + 'px', height: this.pixelSize + 'px' }
+    },
   },
   mounted() {
-    this.setDays();
-    this.setPixels();
+    this.setDays()
+    this.setPixels()
   },
   methods: {
-    setDays() {
-      const yearFrom = this.year;
-      const yearTo = this.year + 1;
+    confirmSetYear(value) {
+      // There are no pixels drawn, no questions asked
+      if (this.pixels.filter(pixel => !!pixel.value).length <= 1) {
+        this.year = value
+        return false
+      }
 
-      const daysOfYear = [];
+      this.$buefy.dialog.confirm({
+        message:
+          'Changing the year will reset all the current pixels, are you sure?',
+        onConfirm: () => {
+          this.year = value
+          this.reset()
+        },
+      })
+    },
+    setYear(value) {
+      this.year = value
+
+      return false
+    },
+    setDays() {
+      const yearFrom = this.year
+      const yearTo = this.year + 1
+
+      const daysOfYear = []
       for (
         let day = new Date(yearFrom, 0, 1);
         day < new Date(yearTo, 0, 1);
         day.setDate(day.getDate() + 1)
       ) {
-        daysOfYear.push(new Date(day));
+        daysOfYear.push(new Date(day))
       }
 
-      this.days = daysOfYear;
+      this.days = daysOfYear
     },
     setPixels() {
       this.pixels = this.days.map((date, index) => {
-        const isLast = index === this.days.length - 1;
+        const isLast = index === this.days.length - 1
 
         return {
           date,
           index,
           value: isLast ? 4 : 0,
-          isEditable: !isLast
-        };
-      });
+          isEditable: !isLast,
+        }
+      })
     },
     selectColor(value) {
-      this.selectedColor = value;
+      this.selectedColor = value
     },
     startDrawing() {
-      this.captureState();
-      this.isDrawing = true;
+      this.captureState()
+      this.isDrawing = true
     },
     stopDrowing() {
-      this.isDrawing = false;
+      this.isDrawing = false
     },
     fill(pixel) {
       if (!pixel.isEditable) {
-        return false;
+        return false
       }
 
-      pixel.value = this.selectedColor;
-      this.pixels = [...this.pixels];
+      pixel.value = this.selectedColor
+      this.pixels = [...this.pixels]
 
-      console.log("pixel", pixel);
+      console.log('pixel', pixel)
     },
     captureState() {
       if (this.isDrawing) {
-        return false;
+        return false
       }
 
-      const pixelsState = this.pixels.map(pixel => ({ ...pixel }));
+      const pixelsState = this.pixels.map(pixel => ({ ...pixel }))
 
-      this.pixelsHistory.push(pixelsState);
+      this.pixelsHistory.push(pixelsState)
 
       // Store max 50 snapshots
       if (this.pixelsHistory.length > 50) {
-        this.pixelsHistory.unshift();
+        this.pixelsHistory.unshift()
       }
     },
     undo() {
       if (!this.pixelsHistory) {
-        return false;
+        return false
       }
 
-      this.pixels = this.pixelsHistory.pop();
+      this.pixels = this.pixelsHistory.pop()
     },
     share() {},
     confirmReset() {
       this.$buefy.dialog.confirm({
-        message: "Reset the pixels?",
-        onConfirm: () => this.reset()
-      });
+        message: 'Reset the pixels?',
+        onConfirm: () => this.reset(),
+      })
     },
     reset() {
-      this.pixelsHistory = [];
-      this.setPixels();
-    }
-  }
-};
+      this.pixelsHistory = []
+      this.setPixels()
+    },
+  },
+}
 </script>
 
 <style lang="scss">
@@ -325,7 +356,7 @@ export default {
 
   &::before {
     display: block;
-    content: " ";
+    content: ' ';
     position: absolute;
     top: 0;
     left: 0;
