@@ -111,17 +111,17 @@
         <div class="level-left">
           <div class="field has-addons">
             <p class="control">
-              <b-button type="is-primary">
+              <b-button type="is-primary" @click="generate">
                 Create my git-pixels!
               </b-button>
             </p>
-            <p class="control">
+            <!-- <p class="control">
               <b-button type="is-primary" icon-right="cog" />
-            </p>
+            </p> -->
           </div>
         </div>
         <div class="level-right">
-          <b-button type="is-primary" icon-left="share-square">
+          <b-button type="is-primary" icon-left="share-square" @click="share">
             Share
           </b-button>
         </div>
@@ -306,7 +306,21 @@ export default {
 
       window.history.replaceState({}, '', updatedUrl)
     },
-    share() {},
+    share() {
+      const dummy = document.createElement('input')
+      const url = window.location.href
+
+      document.body.appendChild(dummy)
+      dummy.value = url
+      dummy.select()
+      document.execCommand('copy')
+      document.body.removeChild(dummy)
+
+      this.$buefy.toast.open({
+        message: 'You pixels URL is copied to clipboard!',
+        type: 'is-success',
+      })
+    },
     confirmReset() {
       this.$buefy.dialog.confirm({
         message: 'Reset the pixels?',
@@ -317,6 +331,12 @@ export default {
       this.pixelsHistory = []
       this.setPixels()
       this.updateUrl()
+    },
+    generate() {
+      this.$buefy.toast.open({
+        message: 'Exporting feature is still in progress, come back later :(',
+        type: 'is-warning',
+      })
     },
   },
 }
