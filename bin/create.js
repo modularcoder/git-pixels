@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-const [, , ...args] = process.argv
+const argv = require('yargs').argv
 
-console.log(`hello world ${args}`)
+console.log(`hello world ${JSON.stringify(argv)}`)

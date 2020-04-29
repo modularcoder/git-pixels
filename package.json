@@ -1,6 +1,6 @@
 {
   "name": "git-pixels",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -12,7 +12,8 @@
     "create": "bin/create.js"
   },
   "dependencies": {
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
