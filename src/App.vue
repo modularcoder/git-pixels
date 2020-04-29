@@ -266,7 +266,7 @@ export default {
       this.updateUrl()
     },
     fill(pixel) {
-      if (!pixel.isEditable) {
+      if (!pixel.isEditable || pixel.value === this.selectedColor) {
         return false
       }
 
