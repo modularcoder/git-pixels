@@ -180,7 +180,9 @@ export default {
   created() {
     const urlParams = new URLSearchParams(window.location.search)
     this.year = urlParams.get('year')
-      ? moment(urlParams.get('year')).year()
+      ? moment()
+          .set('year', urlParams.get('year'))
+          .year()
       : moment().year()
     const pixelsInitialValue = urlParams.get('pixels')
       ? urlParams
@@ -209,6 +211,7 @@ export default {
           this.year = value
           this.setDays()
           this.setPixels()
+          this.updateUrl()
         },
       })
     },
@@ -260,6 +263,7 @@ export default {
     },
     stopDrowing() {
       this.isDrawing = false
+      this.updateUrl()
     },
     fill(pixel) {
       if (!pixel.isEditable) {
@@ -289,6 +293,18 @@ export default {
       }
 
       this.pixels = this.pixelsHistory.pop()
+      this.updateUrl()
+    },
+    updateUrl() {
+      const yearStr = `year=${this.year}`
+      const pixelsStr =
+        this.pixels.filter(pixel => !!pixel.value).length > 1
+          ? `&pixels=${this.pixels.map(pixel => pixel.value).join('')}`
+          : ''
+
+      const updatedUrl = `${window.location.origin}?${yearStr}${pixelsStr}`
+
+      window.history.replaceState({}, '', updatedUrl)
     },
     share() {},
     confirmReset() {
@@ -300,6 +316,7 @@ export default {
     reset() {
       this.pixelsHistory = []
       this.setPixels()
+      this.updateUrl()
     },
   },
 }
