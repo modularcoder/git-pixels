@@ -90,7 +90,7 @@ async function create(argv) {
           `git-pixels: ${dateFormatted} | ${commitNumber}`,
           null,
           {
-            '--date': contributions[0].date.format(),
+            '--date': date.format(),
           },
         )
       }, Promise.resolve())
