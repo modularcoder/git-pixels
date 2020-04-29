@@ -22,7 +22,87 @@ if (!argv.year || !argv.pixels) {
 create(argv)
 
 async function create(argv) {
-  const { year, pixels, amplify = 80, name = 'git-pixels' } = argv
+  const { name = 'git-pixels' } = argv
+
+  // Contributions
+  const contributions = getContributions(argv)
+
+  // Setup dir
+  log(info('Creating directory...'))
+  const pathDir = path.resolve(`./${name}/`)
+  const pathFile = path.resolve(pathDir, 'README.md')
+  const baseMessage =
+    'Created by using [git-pixels](https://github.com/modularcoder/git-pixels)'
+  const dateFormat = 'MMM DD YYYY'
+
+  try {
+    fs.mkdirSync(pathDir)
+    fs.writeFileSync(pathFile, baseMessage)
+  } catch (e) {
+    log(error(`! Error: Couldn't create a direcotry, ${e.message}`))
+
+    process.exit(1)
+  }
+
+  // Setup Repo
+  log(info('Initializing git repozitory...'))
+
+  const simpleGit = SimpleGit(pathDir)
+
+  try {
+    await simpleGit.init(false)
+  } catch (e) {
+    log(error(`! Error: , ${e.message}`))
+    process.exit(1)
+  }
+
+  // Make the commits for each contribution
+  try {
+    await contributions.reduce(async (prevItem, { date, count }) => {
+      await prevItem
+
+      await makeContributions({ date, count })
+    }, Promise.resolve())
+  } catch (e) {
+    log(error(`! Error: , ${e.message}`))
+    process.exit(1)
+  }
+
+  async function makeContributions({ date, count }) {
+    const dateFormatted = date.format(dateFormat)
+
+    if (count === 0) {
+      log(info(`${dateFormatted} - No contributions`))
+      return false
+    }
+
+    await [...Array(count)]
+      .map((x, index) => index)
+      .reduce(async (prevCommit, commitNumber) => {
+        await prevCommit
+
+        fs.writeFileSync(
+          pathFile,
+          `${baseMessage} | ${dateFormatted} | ${commitNumber}`,
+        )
+        await simpleGit.add('./*')
+        await simpleGit.commit(
+          `git-pixels: ${dateFormatted} | ${commitNumber}`,
+          null,
+          {
+            '--date': contributions[0].date.format(),
+          },
+        )
+      }, Promise.resolve())
+
+    log(info(`${dateFormatted} - Committed ${count} contributions `))
+  }
+
+  process.exit(0)
+}
+
+function getContributions(argv) {
+  const { year, pixels, amplify = 20 } = argv
 
   const yearNow = moment().year()
 
@@ -50,40 +130,14 @@ async function create(argv) {
   const pixelsArray = pixels.split('')
 
   const contributions = days.map((date, index) => {
-    const value = pixelsArray[index] || 0
+    const count = pixelsArray[index] || 0
 
     return {
       date,
       index,
-      value: value * amplify,
+      count: count * amplify,
     }
   })
 
-  log(info('Creating directory...'))
-
-  const dir = path.resolve(`./${name}/`)
-
-  try {
-    fs.mkdirSync(dir)
-    fs.writeFileSync(path.resolve(dir, 'README.md'), '')
-  } catch (e) {
-    log(error(`! Error: Couldn't create a direcotry, ${e.message}`))
-
-    process.exit(1)
-  }
-
-  log(info('Initializing git repozitory...'))
-  // log(info(JSON.stringify(contributions, null, 2)))
-
-  const simpleGit = SimpleGit(dir)
-
-  await simpleGit.init(false)
-  await simpleGit.add('.')
-  await simpleGit.commit('Msg', 'README.md', {
-    '--date': contributions[0].date.format(),
-  })
-
-  // Created by using [git-pixels](https://github.com/modularcoder/git-pixels)
-
-  process.exit(0)
+  return contributions
 }
