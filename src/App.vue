@@ -107,10 +107,14 @@
 
       <div class="actions level">
         <div class="level-left">
-          <b-button type="is-dark">Create my git-pixels!</b-button>
+          <b-button type="is-dark" icon-left="download">
+            Create my git-pixels!
+          </b-button>
         </div>
         <div class="level-right">
-          <b-button type="is-primary">Share</b-button>
+          <b-button type="is-primary" icon-left="share-square">
+            Share
+          </b-button>
         </div>
       </div>
     </div>
@@ -134,6 +138,8 @@ export default {
   data() {
     return {
       year: moment().year(),
+      dateFrom: null,
+      dateTo: null,
       numWeeks: 53,
       pixelSize: 18,
       selectedColor: 2,
@@ -162,10 +168,22 @@ export default {
       return { width: this.pixelSize + 'px', height: this.pixelSize + 'px' }
     },
   },
-  mounted() {
+  created() {
+    const urlParams = new URLSearchParams(window.location.search)
+    this.year = urlParams.get('dateTo')
+      ? moment(urlParams.get('dateTo')).year()
+      : moment().year()
+    const pixelsInitialValue = urlParams.get('pixels')
+      ? urlParams
+          .get('pixels')
+          .split('')
+          .map(pixel => parseInt(pixel, 10))
+      : []
+
     this.setDays()
-    this.setPixels()
+    this.setPixels(pixelsInitialValue)
   },
+  mounted() {},
   methods: {
     confirmSetYear(value) {
       // There are no pixels drawn, no questions asked
@@ -178,15 +196,11 @@ export default {
         message:
           'Changing the year will reset all the current pixels, are you sure?',
         onConfirm: () => {
-          this.year = value
           this.reset()
+          this.year = value
+          this.setDays()
         },
       })
-    },
-    setYear(value) {
-      this.year = value
-
-      return false
     },
     setDays() {
       const yearFrom = this.year
@@ -203,14 +217,15 @@ export default {
 
       this.days = daysOfYear
     },
-    setPixels() {
+    setPixels(values = []) {
       this.pixels = this.days.map((date, index) => {
         const isLast = index === this.days.length - 1
+        const value = values[index] || 0
 
         return {
           date,
           index,
-          value: isLast ? 4 : 0,
+          value: isLast ? 4 : value,
           isEditable: !isLast,
         }
       })
@@ -232,8 +247,6 @@ export default {
 
       pixel.value = this.selectedColor
       this.pixels = [...this.pixels]
-
-      console.log('pixel', pixel)
     },
     captureState() {
       if (this.isDrawing) {
