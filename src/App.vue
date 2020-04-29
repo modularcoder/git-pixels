@@ -153,7 +153,7 @@
               >
 
               <h3>
-                Step 4 - your contributions shart should appear in 2 days
+                Step 4 - your contributions should appear in 2 days
               </h3>
             </div>
           </div>
