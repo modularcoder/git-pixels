@@ -46,6 +46,7 @@
                     `${n - 1 ? (n - 1) * amplification : 'No'} contributions`
                   "
                   type="is-black"
+                  size="is-small"
                 >
                   <div
                     class="pixel"
@@ -86,13 +87,14 @@
           :label="
             `
             ${pixel.value ? pixel.value * amplification : 'No'}
-            contributions
+            contributions on ${pixel.dateStr}
             ${!pixel.isEditable ? '(not editable)' : ''}
           `
           "
           v-for="pixel in pixels"
           :key="pixel.index"
           :active="!isDrawing"
+          size="is-small"
           type="is-black"
         >
           <div
@@ -177,8 +179,8 @@ export default {
   },
   created() {
     const urlParams = new URLSearchParams(window.location.search)
-    this.year = urlParams.get('dateTo')
-      ? moment(urlParams.get('dateTo')).year()
+    this.year = urlParams.get('year')
+      ? moment(urlParams.get('year')).year()
       : moment().year()
     const pixelsInitialValue = urlParams.get('pixels')
       ? urlParams
@@ -206,20 +208,31 @@ export default {
           this.reset()
           this.year = value
           this.setDays()
+          this.setPixels()
         },
       })
     },
     setDays() {
-      const yearFrom = this.year
-      const yearTo = this.year + 1
+      const yearNow = moment().year()
+
+      const dateTo =
+        this.year === yearNow
+          ? moment()
+          : moment()
+              .set('year', this.year)
+              .endOf('year')
+
+      const dateFrom = moment(dateTo)
+        .subtract(52, 'weeks')
+        .startOf('week')
 
       const daysOfYear = []
       for (
-        let day = new Date(yearFrom, 0, 1);
-        day < new Date(yearTo, 0, 1);
-        day.setDate(day.getDate() + 1)
+        let day = moment(dateFrom);
+        day.isSameOrBefore(dateTo);
+        day = moment(day).add(1, 'day')
       ) {
-        daysOfYear.push(new Date(day))
+        daysOfYear.push(day)
       }
 
       this.days = daysOfYear
@@ -231,6 +244,7 @@ export default {
 
         return {
           date,
+          dateStr: date.format('MMM D, YYYY'),
           index,
           value: isLast ? 4 : value,
           isEditable: !isLast,
