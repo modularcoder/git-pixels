@@ -111,7 +111,7 @@
         <div class="level-left">
           <div class="field has-addons">
             <p class="control">
-              <b-button type="is-primary" @click="generate">
+              <b-button type="is-primary" @click="toggleOutput">
                 Create my git-pixels!
               </b-button>
             </p>
@@ -126,6 +126,39 @@
           </b-button>
         </div>
       </div>
+
+      <b-collapse :open="isOutputOpen" aria-id="contentIdForA11y1">
+        <div class="output">
+          <div class="notification">
+            <div class="content">
+              <h3>
+                Step 1 - run this command in your terminal
+              </h3>
+
+              <pre class="code-output">{{ code }}</pre>
+
+              <h3>
+                Step 2 - create an empty repo in your GitHub account
+              </h3>
+
+              <h3>
+                Step 3 - push the generated repository to your GitHub
+              </h3>
+
+              <pre>
+  cd git-pixels
+  git remote add origin
+  git@github.com:{GITHUB_USERNAME}/{GITHUB_REPO_NAME}.git
+  git push -u origin master</pre
+              >
+
+              <h3>
+                Step 4 - your contributions shart should appear in 2 days
+              </h3>
+            </div>
+          </div>
+        </div>
+      </b-collapse>
     </div>
 
     <app-footer />
@@ -155,8 +188,11 @@ export default {
       isDrawing: false,
       days: [],
       pixels: [],
+      pixelsStr: '',
       pixelsHistory: [],
       amplification: 25,
+      isOutputOpen: false,
+      code: '',
     }
   },
   computed: {
@@ -179,11 +215,12 @@ export default {
   },
   created() {
     const urlParams = new URLSearchParams(window.location.search)
-    this.year = urlParams.get('year')
-      ? moment()
-          .set('year', urlParams.get('year'))
-          .year()
-      : moment().year()
+    this.year =
+      urlParams.get('year') && parseInt(urlParams.get('year'), 10)
+        ? moment()
+            .set('year', urlParams.get('year'))
+            .year()
+        : moment().year()
     const pixelsInitialValue = urlParams.get('pixels')
       ? urlParams
           .get('pixels')
@@ -264,6 +301,7 @@ export default {
     stopDrowing() {
       this.isDrawing = false
       this.updateUrl()
+      this.generate()
     },
     fill(pixel) {
       if (!pixel.isEditable || pixel.value === this.selectedColor) {
@@ -294,15 +332,17 @@ export default {
 
       this.pixels = this.pixelsHistory.pop()
       this.updateUrl()
+      this.generate()
     },
     updateUrl() {
-      const yearStr = `year=${this.year}`
-      const pixelsStr =
+      const yearStrQuery = `year=${this.year}`
+      const pixelsStr = this.pixels.map(pixel => pixel.value).join('')
+      const pixelsStrQuery =
         this.pixels.filter(pixel => !!pixel.value).length > 1
-          ? `&pixels=${this.pixels.map(pixel => pixel.value).join('')}`
+          ? `&pixels=${pixelsStr}`
           : ''
 
-      const updatedUrl = `${window.location.origin}?${yearStr}${pixelsStr}`
+      const updatedUrl = `${window.location.origin}?${yearStrQuery}${pixelsStrQuery}`
 
       window.history.replaceState({}, '', updatedUrl)
     },
@@ -331,12 +371,15 @@ export default {
       this.pixelsHistory = []
       this.setPixels()
       this.updateUrl()
+      this.generate()
+    },
+    toggleOutput() {
+      this.isOutputOpen = !this.isOutputOpen
     },
     generate() {
-      this.$buefy.toast.open({
-        message: 'Exporting feature is still in progress, come back later :(',
-        type: 'is-warning',
-      })
+      this.code = `npx git-pixels create --name=git-pixels --year=${
+        this.year
+      } --pixels=${this.pixels.map(pixel => pixel.value).join('')}`
     },
   },
 }
@@ -362,7 +405,6 @@ export default {
 }
 
 .form-container {
-  user-select: none;
   padding: 3rem;
   border: 2px dashed rgb(230, 230, 230);
 }
@@ -381,6 +423,7 @@ export default {
   display: inline-flex;
   flex-direction: row;
   vertical-align: bottom;
+  user-select: none;
 
   .pixel {
     cursor: pointer;
@@ -394,6 +437,7 @@ export default {
   flex-wrap: wrap;
   display: flex;
   margin-bottom: 2rem;
+  user-select: none;
 }
 
 .pixel {
@@ -441,5 +485,10 @@ export default {
   &:hover::before {
     background: rgba(0, 0, 0, 0.2);
   }
+}
+
+.code-output {
+  padding: 0.5em;
+  background: rgba(0, 0, 0, 0.1);
 }
 </style>
