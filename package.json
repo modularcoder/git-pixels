@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "chalk": "^4.0.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "simple-git": "^2.1.0",
     "yargs": "^15.3.1"
   },
